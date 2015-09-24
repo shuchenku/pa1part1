@@ -4,14 +4,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import cs131.pa1.filter.Message;
 
 public class SequentialCommandBuilder {
 	
-	final static List<String> PIPES_IN = Arrays.asList(new String[] {"Grep","Uniq","Wc","Fileprinter","OutPrinter"});
-	final static List<String> PIPES_OUT = Arrays.asList(new String[] {"Cat","Ls","Pwd","Grep","Wc","Uniq"});
+	final static Set<String> PIPES_IN = new HashSet<String>(Arrays.asList(new String[] {"Grep","Uniq","Wc","Fileprinter","OutPrinter"}));
+	final static Set<String> PIPES_OUT = new HashSet<String>(Arrays.asList(new String[] {"Cat","Ls","Pwd","Grep","Wc","Uniq"}));
 	
 	public static List<SequentialFilter> createFiltersFromCommand(String command){	
 
@@ -25,12 +27,14 @@ public class SequentialCommandBuilder {
 			SequentialFilter prevFilter = filterPipeline.size()>0? filterPipeline.get(filterPipeline.size()-1):null;
 			
 			boolean isError = (subFilter instanceof OutPrinter) && ((OutPrinter)subFilter).isStandardError();
-			boolean validPipe = validateIO(prevFilter,subFilter);
+			int invalidPipe = ioInvalid(prevFilter,subFilter);
 			
-			if (isError || !validPipe){
+			if (isError || invalidPipe != 0){
 				
-				if (!validPipe && !isError) {
+				if (invalidPipe == 1 && !isError) {
 					subFilter = new OutPrinter(Message.REQUIRES_INPUT.with_parameter(subCommand));
+				} else if (invalidPipe == -1 && !isError) {
+					subFilter = new OutPrinter(Message.NO_INPUT.with_parameter(subCommand));
 				}
 				
 				filterPipeline.clear();
@@ -48,10 +52,15 @@ public class SequentialCommandBuilder {
 	}
 
 
-	private static boolean validateIO(SequentialFilter fromFilter, SequentialFilter toFilter) {
+	private static int ioInvalid(SequentialFilter fromFilter, SequentialFilter toFilter) {
 		boolean gets_output = (fromFilter!=null) && PIPES_OUT.contains(fromFilter.getClass().getSimpleName());
 		boolean requires_input = PIPES_IN.contains(toFilter.getClass().getSimpleName());
-		return gets_output==requires_input;
+		if (gets_output && !requires_input) {
+			return -1;
+		} else if (!gets_output && requires_input) {
+			return 1;
+		}
+		return 0;
 	}
 
 
