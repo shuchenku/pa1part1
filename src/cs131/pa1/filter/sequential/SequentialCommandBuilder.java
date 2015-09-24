@@ -12,6 +12,7 @@ public class SequentialCommandBuilder {
 	
 	final static List<String> PIPES_IN = Arrays.asList(new String[] {"Grep","Uniq","Wc","Fileprinter","OutPrinter"});
 	final static List<String> PIPES_OUT = Arrays.asList(new String[] {"Cat","Ls","Pwd","Grep","Wc","Uniq"});
+	final static List<String> REJECTS_IN = Arrays.asList(new String[] {"Cat", "Ls", "Pwd", "Cd"});
 	
 	public static List<SequentialFilter> createFiltersFromCommand(String command){	
 
@@ -25,12 +26,14 @@ public class SequentialCommandBuilder {
 			SequentialFilter prevFilter = filterPipeline.size()>0? filterPipeline.get(filterPipeline.size()-1):null;
 			
 			boolean isError = (subFilter instanceof OutPrinter) && ((OutPrinter)subFilter).isStandardError();
-			boolean validPipe = validateIO(prevFilter,subFilter);
+			int validPipe = validateIO(prevFilter,subFilter);
 			
-			if (isError || !validPipe){
+			if (isError || validPipe > 0){
 				
-				if (!validPipe && !isError) {
+				if (validPipe == 1 && !isError) {
 					subFilter = new OutPrinter(Message.REQUIRES_INPUT.with_parameter(subCommand));
+				} else if (validPipe == 2 && !isError) {
+					subFilter = new OutPrinter(Message.NO_INPUT.with_parameter(subCommand));
 				}
 				
 				filterPipeline.clear();
@@ -48,10 +51,16 @@ public class SequentialCommandBuilder {
 	}
 
 
-	private static boolean validateIO(SequentialFilter fromFilter, SequentialFilter toFilter) {
+	private static int validateIO(SequentialFilter fromFilter, SequentialFilter toFilter) {
 		boolean gets_output = (fromFilter!=null) && PIPES_OUT.contains(fromFilter.getClass().getSimpleName());
 		boolean requires_input = PIPES_IN.contains(toFilter.getClass().getSimpleName());
-		return gets_output==requires_input;
+		boolean rejects_input = (fromFilter != null) && REJECTS_IN.contains(toFilter.getClass().getSimpleName());
+		if (rejects_input) {
+			return 2;
+		} else if (gets_output != requires_input) {
+			return 1;
+		}
+		return 0;
 	}
 
 
