@@ -12,11 +12,12 @@ import cs131.pa1.filter.Message;
 
 public class SequentialCommandBuilder {
 	
-	final static Set<String> PIPES_IN = new HashSet<String>(Arrays.asList(new String[] {"Grep","Uniq","Wc","Fileprinter","OutPrinter"}));
-	final static Set<String> PIPES_OUT = new HashSet<String>(Arrays.asList(new String[] {"Cat","Ls","Pwd","Grep","Wc","Uniq"}));
+	private final static Set<String> PIPES_IN = new HashSet<String>(Arrays.asList(new String[] {"Grep","Uniq","Wc","Fileprinter","OutPrinter"}));
+	private final static Set<String> PIPES_OUT = new HashSet<String>(Arrays.asList(new String[] {"Cat","Ls","Pwd","Grep","Wc","Uniq"}));
 	
+	// Returns a list of SequentialFilters, one for each command and one for the output type
 	public static List<SequentialFilter> createFiltersFromCommand(String command){	
-
+		// Determining whether to print to console or file and removing redirection from command
 		SequentialFilter finalFilter = determineFinalFilter(command);
 		command = adjustCommandToRemoveFinalFilter(command);		
 		List<String> subCommands = Arrays.asList(command.split("\\|"));
@@ -24,25 +25,22 @@ public class SequentialCommandBuilder {
 		
 		for (String subCommand : subCommands){
 			SequentialFilter subFilter = constructFilterFromSubCommand(subCommand.trim());
-			SequentialFilter prevFilter = filterPipeline.size()>0? filterPipeline.get(filterPipeline.size()-1):null;
+			SequentialFilter prevFilter = !filterPipeline.isEmpty() ? filterPipeline.get(filterPipeline.size() - 1) : null;
 			
-			boolean isError = (subFilter instanceof OutPrinter) && ((OutPrinter)subFilter).isStandardError();
-			int invalidPipe = ioInvalid(prevFilter,subFilter);
-			
-			if (isError || invalidPipe != 0){
-				
-				if (invalidPipe == 1 && !isError) {
-					subFilter = new OutPrinter(Message.REQUIRES_INPUT.with_parameter(subCommand));
-				} else if (invalidPipe == -1 && !isError) {
-					subFilter = new OutPrinter(Message.NO_INPUT.with_parameter(subCommand));
-				}
-				
+			// isError is true if: command not found, invalid argument, file/directory not found
+			boolean subCommandError = (subFilter instanceof OutPrinter) && ((OutPrinter)subFilter).isStandardError();
+			if (subCommandError) {
 				filterPipeline.clear();
 				filterPipeline.add(subFilter);
-				linkFilters(filterPipeline);
 				return filterPipeline;
 			}
-			
+			// invalidPipe is true if the piping order is invalid
+			SequentialFilter invalidPipe = ioInvalid(prevFilter, subFilter, subCommand);
+			if (invalidPipe != null) {
+				filterPipeline.clear();
+				filterPipeline.add(invalidPipe);
+				return filterPipeline;
+			}
 			filterPipeline.add(subFilter);
 		}
 		
@@ -51,16 +49,16 @@ public class SequentialCommandBuilder {
 		return filterPipeline;
 	}
 
-
-	private static int ioInvalid(SequentialFilter fromFilter, SequentialFilter toFilter) {
-		boolean gets_output = (fromFilter!=null) && PIPES_OUT.contains(fromFilter.getClass().getSimpleName());
-		boolean requires_input = PIPES_IN.contains(toFilter.getClass().getSimpleName());
-		if (gets_output && !requires_input) {
-			return -1;
-		} else if (!gets_output && requires_input) {
-			return 1;
+	// Returns an output filter with error message if there is a piping error
+	private static SequentialFilter ioInvalid(SequentialFilter fromFilter, SequentialFilter toFilter, String subCommand) {
+		boolean providesOutput = (fromFilter!=null) && PIPES_OUT.contains(fromFilter.getClass().getSimpleName());
+		boolean requiresInput = PIPES_IN.contains(toFilter.getClass().getSimpleName());
+		if (providesOutput && !requiresInput) {
+			return new OutPrinter(Message.NO_INPUT.with_parameter(subCommand));
+		} else if (!providesOutput && requiresInput) {
+			return new OutPrinter(Message.REQUIRES_INPUT.with_parameter(subCommand));
 		}
-		return 0;
+		return null;
 	}
 
 
