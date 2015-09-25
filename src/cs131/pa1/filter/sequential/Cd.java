@@ -7,10 +7,15 @@ public class Cd extends SequentialFilter{
 	boolean hasBeenSwapped;
 	String swappingToLocation;
 	
-	public Cd (String command) throws IOException{
+	public Cd (String directory) throws IOException, InvalidArgumentException{
+		
+		if (directory==null) {
+			throw new InvalidArgumentException();
+		}
+		
 		hasBeenSwapped = false;
 		String currentWorkingDirectory = SequentialREPL.currentWorkingDirectory;
-		File newDir = new File(command); 
+		File newDir = new File(directory); 
 		if (newDir.isAbsolute()){
 			swappingToLocation = newDir.getCanonicalPath();
 		} else {

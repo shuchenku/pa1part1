@@ -6,7 +6,7 @@ public class Grep extends SequentialFilter {
 	
 	public Grep(String pattern) throws InvalidArgumentException{
 		
-		if (pattern.equals("")) {
+		if (pattern==null) {
 			throw new InvalidArgumentException();
 		}
 		this.searchPattern = pattern;
