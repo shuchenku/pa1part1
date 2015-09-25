@@ -1,6 +1,6 @@
 package cs131.pa1.filter.concurrent;
 
-public class Grep extends ConcurrentFilter {
+public class Grep extends SequentialFilter {
 	
 	private String searchPattern;
 	

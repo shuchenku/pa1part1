@@ -2,9 +2,10 @@ package cs131.pa1.filter.concurrent;
 
 import java.util.List;
 import java.util.Scanner;
+
 import cs131.pa1.filter.Message;
 import cs131.pa1.filter.concurrent.ConcurrentCommandBuilder;
-import cs131.pa1.filter.concurrent.ConcurrentFilter;
+import cs131.pa1.filter.concurrent.SequentialFilter;
 
 public class ConcurrentREPL {
 
@@ -23,7 +24,7 @@ public class ConcurrentREPL {
 				System.out.print(Message.GOODBYE);
 				return;
 			} else {
-				List<ConcurrentFilter> filters = ConcurrentCommandBuilder.createFiltersFromCommand(command);
+				List<SequentialFilter> filters = ConcurrentCommandBuilder.createFiltersFromCommand(command);
 				startFilters(filters);
 			}
 			System.out.print(Message.NEWCOMMAND);
@@ -31,9 +32,17 @@ public class ConcurrentREPL {
 		console.close();
 	}
 	
-	public static void startFilters(List<ConcurrentFilter> filters){
-		for (ConcurrentFilter filter : filters){
+	public static void startFilters(List<SequentialFilter> filters){
+		SequentialFilter lastFilter = null;
+		for (SequentialFilter filter : filters){
+			lastFilter = filter;
 			filter.process();
+		}
+		try {
+			lastFilter.wait();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

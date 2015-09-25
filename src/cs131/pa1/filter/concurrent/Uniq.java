@@ -3,7 +3,7 @@ package cs131.pa1.filter.concurrent;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Uniq extends ConcurrentFilter {
+public class Uniq extends SequentialFilter {
 
 	private Set<String> seen;
 	

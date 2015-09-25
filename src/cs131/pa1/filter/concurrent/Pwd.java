@@ -1,6 +1,6 @@
 package cs131.pa1.filter.concurrent;
 
-public class Pwd extends ConcurrentFilter {
+public class Pwd extends SequentialFilter {
 	
 	@Override
 	public void process(){
