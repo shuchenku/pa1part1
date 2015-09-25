@@ -12,22 +12,27 @@ import cs131.pa1.filter.Message;
 
 public class SequentialCommandBuilder {
 	
+	// commands that requires piped input
 	private final static Set<String> PIPES_IN = new HashSet<String>(Arrays.asList(new String[] {"Grep","Uniq","Wc","Fileprinter","OutPrinter"}));
+	// commands that produces piped output
 	private final static Set<String> PIPES_OUT = new HashSet<String>(Arrays.asList(new String[] {"Cat","Ls","Pwd","Grep","Wc","Uniq"}));
 	
 	// Returns a list of SequentialFilters, one for each command and one for the output type
 	public static List<SequentialFilter> createFiltersFromCommand(String command){	
+		
 		// Determining whether to print to console or file and removing redirection from command
 		SequentialFilter finalFilter = determineFinalFilter(command);
 		command = adjustCommandToRemoveFinalFilter(command);		
+		
+		//parse the input command and create a list of filters
 		List<String> subCommands = Arrays.asList(command.split("\\|"));
 		List<SequentialFilter> filterPipeline = new ArrayList<SequentialFilter>();
 		
 		for (String subCommand : subCommands){
 			SequentialFilter subFilter = constructFilterFromSubCommand(subCommand.trim());
-			SequentialFilter prevFilter = !filterPipeline.isEmpty() ? filterPipeline.get(filterPipeline.size() - 1) : null;
+			SequentialFilter prevFilter = !filterPipeline.isEmpty() ? filterPipeline.get(filterPipeline.size()-1) : null;
 			
-			// isError is true if: command not found, invalid argument, file/directory not found
+			// subCommandError is true if: command not found, invalid argument, file/directory not found
 			boolean subCommandError = (subFilter instanceof OutPrinter) && ((OutPrinter)subFilter).isStandardError();
 			if (subCommandError) {
 				filterPipeline.clear();
@@ -45,6 +50,7 @@ public class SequentialCommandBuilder {
 		}
 		
 		filterPipeline.add(finalFilter);
+		
 		linkFilters(filterPipeline);
 		return filterPipeline;
 	}
@@ -60,48 +66,55 @@ public class SequentialCommandBuilder {
 		}
 		return null;
 	}
-
-
+	
+	//link the filters' input and output queue
 	private static void linkFilters(List<SequentialFilter> filters){	
 		for (int i = 0; i < filters.size() - 1; i++){
 			filters.get(i).setNextFilter(filters.get(i+1));
 		}
 	}
 
-
+	// parses subcommands and returns a sequential filter
 	private static SequentialFilter constructFilterFromSubCommand(String subCommand){
-		int startIdxOfParams = subCommand.contains(" ") ? subCommand.indexOf(' '):subCommand.length();
-		String cmd = subCommand.substring(0,startIdxOfParams).toLowerCase();
-		
+		String[] parsed = subCommand.split(" ",2);
+		String cmd = parsed[0].toLowerCase();
+		String param = (parsed.length>1)? parsed[1].trim():null;
+			
 		switch(cmd) {
+		case "cd":
+			try {
+				return new Cd(param);
+			} catch (IOException e) {
+				return new OutPrinter(Message.DIRECTORY_NOT_FOUND.with_parameter(subCommand));
+			} catch (MissingArgumentException e) {
+				return new OutPrinter(Message.MISSING_ARGUMENT.with_parameter(subCommand));
+			} catch (TooManyArgumentsException e) {
+				return new OutPrinter(Message.TOO_MANY_ARGUMENTS.with_parameter(subCommand));
+			}
+		case "cat":
+			try {
+				return new Cat(param);
+			} catch (FileNotFoundException e) {
+				return new OutPrinter(Message.FILE_NOT_FOUND.with_parameter(subCommand));
+			} catch (MissingArgumentException e) {
+				return new OutPrinter(Message.MISSING_ARGUMENT.with_parameter(subCommand));
+			}
+		case "grep":
+			try {
+				return new Grep(param);
+			} catch (MissingArgumentException e) {
+				return new OutPrinter(Message.MISSING_ARGUMENT.with_parameter(subCommand));
+			} catch (TooManyArgumentsException e) {
+				return new OutPrinter(Message.TOO_MANY_ARGUMENTS.with_parameter(subCommand));
+			}
 		case "pwd":
 			return new Pwd();
 		case "ls":
 			return new Ls();
-		case "cd":
-			try {
-				return new Cd(subCommand.substring(startIdxOfParams).trim());
-			} catch (IOException e) {
-				return new OutPrinter(Message.DIRECTORY_NOT_FOUND.with_parameter(subCommand));
-			}
-		case "cat":
-			try {
-				return new Cat(subCommand.substring(startIdxOfParams).trim());
-			} catch (FileNotFoundException | InvalidArgumentException e) {
-				return new OutPrinter(Message.FILE_NOT_FOUND.with_parameter(subCommand));
-			}
-		case "grep":
-			try {
-				return new Grep(subCommand.substring(startIdxOfParams).trim());
-			} catch (InvalidArgumentException e) {
-				return new OutPrinter(Message.INVALID_ARGUMENT.with_parameter(cmd));
-			}
 		case "wc":
 			return new Wc();
 		case "uniq":
 			return new Uniq();
-		case ">":
-			return new FilePrinter(subCommand);
 		default:
 			return new OutPrinter(Message.COMMAND_NOT_FOUND.with_parameter(subCommand));
 		}	
@@ -121,11 +134,5 @@ public class SequentialCommandBuilder {
 			return new FilePrinter(fileName);
 		}
 		return new OutPrinter();
-	}
-	
-	public static void startFilters(List<SequentialFilter> filters){
-		for (SequentialFilter filter : filters){
-			filter.process();
-		}
 	}
 }

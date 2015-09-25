@@ -4,11 +4,16 @@ public class Grep extends SequentialFilter {
 	
 	private String searchPattern;
 	
-	public Grep(String pattern) throws InvalidArgumentException{
+	public Grep(String pattern) throws MissingArgumentException, TooManyArgumentsException{
 		
-		if (pattern.equals("")) {
-			throw new InvalidArgumentException();
+		if (pattern==null) {
+			throw new MissingArgumentException();
 		}
+		
+		if (pattern.contains(" ")) {
+			throw new TooManyArgumentsException();
+		}
+		
 		this.searchPattern = pattern;
 	}
 	

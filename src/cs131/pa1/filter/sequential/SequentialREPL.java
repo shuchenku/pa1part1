@@ -24,10 +24,16 @@ public class SequentialREPL {
 				return;
 			} else {
 				List<SequentialFilter> filters = SequentialCommandBuilder.createFiltersFromCommand(command);
-				SequentialCommandBuilder.startFilters(filters);
+				startFilters(filters);
 			}
 			System.out.print(Message.NEWCOMMAND);
 		}
 		console.close();
+	}
+	
+	public static void startFilters(List<SequentialFilter> filters){
+		for (SequentialFilter filter : filters){
+			filter.process();
+		}
 	}
 }

@@ -14,23 +14,19 @@ public class Cat extends SequentialFilter {
 	private List<Scanner> scanners;
 	private int scannerNumber;
 	
-	public Cat(List<String> fileNames) throws FileNotFoundException, InvalidArgumentException{
+	public Cat(String fileNames) throws FileNotFoundException, MissingArgumentException{
 		
-		if (fileNames.isEmpty()) {
-			throw new InvalidArgumentException();
+		if (fileNames==null) {
+			throw new MissingArgumentException();
 		}
 		
 		String cwd = SequentialREPL.currentWorkingDirectory;
 		scanners = new ArrayList<Scanner>();
 		scannerNumber = 0;
-		for (String fileName : fileNames){
+		for (String fileName : Arrays.asList(fileNames.split("\\s+"))){
 			Scanner fileScanner = new Scanner(new File(cwd + FILE_SEPARATOR + fileName));
 			scanners.add(fileScanner);
 		}
-	}
-	
-	public Cat(String fileNames) throws FileNotFoundException, InvalidArgumentException{
-		this(Arrays.asList(fileNames.split("\\s+")));
 	}
 
 	@Override
