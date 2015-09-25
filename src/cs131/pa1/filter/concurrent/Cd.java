@@ -3,7 +3,7 @@ package cs131.pa1.filter.concurrent;
 import java.io.File;
 import java.io.IOException;
 
-public class Cd extends ConcurrentFilter{
+public class Cd extends SequentialFilter{
 	// hasBeenSwapped: true if working directory has changed
 	// swappingTolocation: the path that will be the new working directory
 	boolean hasBeenSwapped;

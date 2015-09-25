@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 import cs131.pa1.filter.concurrent.ConcurrentREPL;
 
-public class Cat extends ConcurrentFilter {
+public class Cat extends SequentialFilter {
 
 	private List<Scanner> scanners;
 	private int scannerNumber;
@@ -31,7 +31,7 @@ public class Cat extends ConcurrentFilter {
 	}
 
 	@Override
-	public void process(){
+	public void run(){
 		while (!isDone()){
 			Scanner scan = scanners.get(scannerNumber);
 			while (scan.hasNextLine()){

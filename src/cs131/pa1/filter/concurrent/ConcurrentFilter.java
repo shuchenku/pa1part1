@@ -1,14 +1,14 @@
 package cs131.pa1.filter.concurrent;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import cs131.pa1.filter.Filter;
 
 
-public abstract class ConcurrentFilter extends Filter {
+public abstract class ConcurrentFilter extends Filter implements Runnable {
 	
-	protected Queue<String> input;
-	protected Queue<String> output;
+	protected BlockingQueue<String> input;
+	protected BlockingQueue<String> output;
 	
 	@Override
 	public void setPrevFilter(Filter prevFilter) {
@@ -22,7 +22,7 @@ public abstract class ConcurrentFilter extends Filter {
 			this.next = concurrentNext;
 			concurrentNext.prev = this;
 			if (this.output == null){
-				this.output = new LinkedList<String>();
+				this.output = new LinkedBlockingQueue<String>();
 			}
 			concurrentNext.input = this.output;
 		} else {
@@ -30,19 +30,25 @@ public abstract class ConcurrentFilter extends Filter {
 		}
 	}
 	
-	public void process(){
-		while (!input.isEmpty()){
-			String line = input.poll();
-			String processedLine = processLine(line);
-			if (processedLine != null){
-				output.add(processedLine);
+	public void run(){
+		while (!this.isDone()){
+			String line;
+			try {
+				line = input.take();
+				String processedLine = processLine(line);
+				if (processedLine != null){
+					output.put(processedLine);
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}	
 	}
 	
 	@Override
 	public boolean isDone() {
-		return input.size() == 0;
+		return input.size() == 0 && (this.prev == null || this.prev.isDone());
 	}
 	
 	protected abstract String processLine(String line);

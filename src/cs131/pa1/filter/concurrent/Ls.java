@@ -2,7 +2,7 @@ package cs131.pa1.filter.concurrent;
 
 import java.io.File;
 
-public class Ls extends ConcurrentFilter {
+public class Ls extends SequentialFilter {
 	
 	@Override
 	public void process(){

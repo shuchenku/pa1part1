@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
-public class FilePrinter extends ConcurrentFilter {
+public class FilePrinter extends SequentialFilter {
 	private PrintStream printWriter;
 	
 	public FilePrinter(String outputFileName){
