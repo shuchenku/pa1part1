@@ -24,7 +24,7 @@ public class SequentialCommandBuilder {
 		SequentialFilter finalFilter = determineFinalFilter(command);
 		command = adjustCommandToRemoveFinalFilter(command);		
 		
-		//parse the input command and create a list of filters
+		//parse the input command based on pipes and create a list of filters
 		List<String> subCommands = Arrays.asList(command.split("\\|"));
 		List<SequentialFilter> filterPipeline = new ArrayList<SequentialFilter>();
 		
