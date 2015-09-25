@@ -32,7 +32,7 @@ public class SequentialCommandBuilder {
 			SequentialFilter subFilter = constructFilterFromSubCommand(subCommand.trim());
 			SequentialFilter prevFilter = !filterPipeline.isEmpty() ? filterPipeline.getLast() : null;
 			
-			// isError is true if: command not found, invalid argument, file/directory not found
+			// subCommandError is true if: command not found, invalid argument, file/directory not found
 			boolean subCommandError = (subFilter instanceof OutPrinter) && ((OutPrinter)subFilter).isStandardError();
 			if (subCommandError) {
 				filterPipeline.clear();
