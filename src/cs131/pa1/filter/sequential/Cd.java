@@ -7,10 +7,14 @@ public class Cd extends SequentialFilter{
 	boolean hasBeenSwapped;
 	String swappingToLocation;
 	
-	public Cd (String directory) throws IOException, InvalidArgumentException{
+	public Cd (String directory) throws IOException, MissingArgumentException, TooManyArgumentsException {
 		
 		if (directory==null) {
-			throw new InvalidArgumentException();
+			throw new MissingArgumentException();
+		}
+		
+		if (directory.contains(" ")) {
+			throw new TooManyArgumentsException();
 		}
 		
 		hasBeenSwapped = false;

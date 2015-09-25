@@ -74,6 +74,7 @@ public class SequentialCommandBuilder {
 		}
 	}
 
+	// parses subcommands and returns a sequential filter
 	private static SequentialFilter constructFilterFromSubCommand(String subCommand){
 		String[] parsed = subCommand.split(" ",2);
 		String cmd = parsed[0].toLowerCase();

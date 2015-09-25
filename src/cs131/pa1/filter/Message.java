@@ -9,7 +9,8 @@ public enum Message {
     COMMAND_NOT_FOUND("The command [%s] was not recognized."),
     REQUIRES_INPUT("The command [%s] requires input."),
     NO_INPUT("The command [%s] does not accept input."),
-    INVALID_ARGUMENT("The command [%S] is missing an argument.")
+    MISSING_ARGUMENT("The command [%S] is missing an argument."),
+    TOO_MANY_ARGUMENTS("The command [%S] has too many arguments."),
     ;
     private final String message;
     
