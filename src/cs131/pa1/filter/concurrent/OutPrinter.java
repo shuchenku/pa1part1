@@ -1,9 +1,10 @@
 package cs131.pa1.filter.concurrent;
 
+import java.util.LinkedList;
+
 public class OutPrinter extends ConcurrentFilter {
 	
 	private boolean standardError = false;
-	private String errorMessage;
 	
 	public OutPrinter() {
 		super();
@@ -11,22 +12,13 @@ public class OutPrinter extends ConcurrentFilter {
 	
 	public OutPrinter(String errorMessage) {
 		standardError = true;
-		this.errorMessage = errorMessage;	
-	}
-	
-	@Override
-	public void process() {
-		if (standardError) {
-			System.out.println(errorMessage);
-		} else {
-			super.process();
-		}
+		input = new LinkedList<String>();
+		input.add(errorMessage);
 	}
 	
 	public boolean isStandardError() {
 		return standardError;
 	}
-	
 	
 	@Override
 	protected String processLine(String line) {
