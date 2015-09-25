@@ -1,12 +1,12 @@
-package cs131.pa1.filter.sequential;
+package cs131.pa1.filter.concurrent;
 
 import java.util.List;
 import java.util.Scanner;
 import cs131.pa1.filter.Message;
-import cs131.pa1.filter.sequential.SequentialCommandBuilder;
-import cs131.pa1.filter.sequential.SequentialFilter;
+import cs131.pa1.filter.concurrent.ConcurrentCommandBuilder;
+import cs131.pa1.filter.concurrent.ConcurrentFilter;
 
-public class SequentialREPL {
+public class ConcurrentREPL {
 
 	static String currentWorkingDirectory;
 	
@@ -23,7 +23,7 @@ public class SequentialREPL {
 				System.out.print(Message.GOODBYE);
 				return;
 			} else {
-				List<SequentialFilter> filters = SequentialCommandBuilder.createFiltersFromCommand(command);
+				List<ConcurrentFilter> filters = ConcurrentCommandBuilder.createFiltersFromCommand(command);
 				startFilters(filters);
 			}
 			System.out.print(Message.NEWCOMMAND);
@@ -31,8 +31,8 @@ public class SequentialREPL {
 		console.close();
 	}
 	
-	public static void startFilters(List<SequentialFilter> filters){
-		for (SequentialFilter filter : filters){
+	public static void startFilters(List<ConcurrentFilter> filters){
+		for (ConcurrentFilter filter : filters){
 			filter.process();
 		}
 	}

@@ -15,7 +15,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({RedirectionTests.class, REPLTests.class, TextProcessingTests.class, WorkingDirectoryTests.class})
-public class AllSequentialTests {
+public class AllConcurrentTests {
 	
 	final static boolean DEBUGGING_MODE = false;
 
@@ -36,7 +36,7 @@ public class AllSequentialTests {
 
     @AfterClass
     public static void tearDown() {
-    	if (!AllSequentialTests.DEBUGGING_MODE){
+    	if (!AllConcurrentTests.DEBUGGING_MODE){
 	    	String[] files = {"hello.txt", "hello2.txt", "world.txt", "hello-world.txt", "fizz-buzz-100.txt", "fizz-buzz-10000.txt"};
 	    	for (String fileName : files){
 	    		File f = new File(fileName);

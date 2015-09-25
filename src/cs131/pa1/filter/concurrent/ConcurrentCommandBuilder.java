@@ -1,4 +1,4 @@
-package cs131.pa1.filter.sequential;
+package cs131.pa1.filter.concurrent;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,27 +10,27 @@ import java.util.Set;
 
 import cs131.pa1.filter.Message;
 
-public class SequentialCommandBuilder {
+public class ConcurrentCommandBuilder {
 	
 	// commands that requires piped input
 	private final static Set<String> PIPES_IN = new HashSet<String>(Arrays.asList(new String[] {"Grep","Uniq","Wc","Fileprinter","OutPrinter"}));
 	// commands that produces piped output
 	private final static Set<String> PIPES_OUT = new HashSet<String>(Arrays.asList(new String[] {"Cat","Ls","Pwd","Grep","Wc","Uniq"}));
 	
-	// Returns a list of SequentialFilters, one for each command and one for the output type
-	public static List<SequentialFilter> createFiltersFromCommand(String command){	
+	// Returns a list of concurrentFilters, one for each command and one for the output type
+	public static List<ConcurrentFilter> createFiltersFromCommand(String command){	
 		
 		// Determining whether to print to console or file and removing redirection from command
-		SequentialFilter finalFilter = determineFinalFilter(command);
+		ConcurrentFilter finalFilter = determineFinalFilter(command);
 		command = adjustCommandToRemoveFinalFilter(command);		
 		
 		//parse the input command and create a list of filters
 		List<String> subCommands = Arrays.asList(command.split("\\|"));
-		List<SequentialFilter> filterPipeline = new ArrayList<SequentialFilter>();
+		List<ConcurrentFilter> filterPipeline = new ArrayList<ConcurrentFilter>();
 		
 		for (String subCommand : subCommands){
-			SequentialFilter subFilter = constructFilterFromSubCommand(subCommand.trim());
-			SequentialFilter prevFilter = !filterPipeline.isEmpty() ? filterPipeline.get(filterPipeline.size()-1) : null;
+			ConcurrentFilter subFilter = constructFilterFromSubCommand(subCommand.trim());
+			ConcurrentFilter prevFilter = !filterPipeline.isEmpty() ? filterPipeline.get(filterPipeline.size()-1) : null;
 			
 			// subCommandError is true if: command not found, invalid argument, file/directory not found
 			boolean subCommandError = (subFilter instanceof OutPrinter) && ((OutPrinter)subFilter).isStandardError();
@@ -40,7 +40,7 @@ public class SequentialCommandBuilder {
 				return filterPipeline;
 			}
 			// invalidPipe is true if the piping order is invalid
-			SequentialFilter invalidPipe = ioInvalid(prevFilter, subFilter, subCommand);
+			ConcurrentFilter invalidPipe = ioInvalid(prevFilter, subFilter, subCommand);
 			if (invalidPipe != null) {
 				filterPipeline.clear();
 				filterPipeline.add(invalidPipe);
@@ -56,7 +56,7 @@ public class SequentialCommandBuilder {
 	}
 
 	// Returns an output filter with error message if there is a piping error
-	private static SequentialFilter ioInvalid(SequentialFilter fromFilter, SequentialFilter toFilter, String subCommand) {
+	private static ConcurrentFilter ioInvalid(ConcurrentFilter fromFilter, ConcurrentFilter toFilter, String subCommand) {
 		boolean providesOutput = (fromFilter!=null) && PIPES_OUT.contains(fromFilter.getClass().getSimpleName());
 		boolean requiresInput = PIPES_IN.contains(toFilter.getClass().getSimpleName());
 		if (providesOutput && !requiresInput) {
@@ -68,14 +68,14 @@ public class SequentialCommandBuilder {
 	}
 	
 	//link the filters' input and output queue
-	private static void linkFilters(List<SequentialFilter> filters){	
+	private static void linkFilters(List<ConcurrentFilter> filters){	
 		for (int i = 0; i < filters.size() - 1; i++){
 			filters.get(i).setNextFilter(filters.get(i+1));
 		}
 	}
 
-	// parses subcommands and returns a sequential filter
-	private static SequentialFilter constructFilterFromSubCommand(String subCommand){
+	// parses subcommands and returns a concurrent filter
+	private static ConcurrentFilter constructFilterFromSubCommand(String subCommand){
 		String[] parsed = subCommand.split(" ",2);
 		String cmd = parsed[0].toLowerCase();
 		String param = (parsed.length>1)? parsed[1].trim():null;
@@ -128,7 +128,7 @@ public class SequentialCommandBuilder {
 		}
 	}
 	
-	private static SequentialFilter determineFinalFilter(String command){
+	private static ConcurrentFilter determineFinalFilter(String command){
 		if (command.contains(">")){
 			String fileName = command.substring(command.lastIndexOf(">") + 1).trim();
 			return new FilePrinter(fileName);

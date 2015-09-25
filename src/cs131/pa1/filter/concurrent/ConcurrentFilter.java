@@ -1,11 +1,11 @@
-package cs131.pa1.filter.sequential;
+package cs131.pa1.filter.concurrent;
 import java.util.LinkedList;
 import java.util.Queue;
 
 import cs131.pa1.filter.Filter;
 
 
-public abstract class SequentialFilter extends Filter {
+public abstract class ConcurrentFilter extends Filter {
 	
 	protected Queue<String> input;
 	protected Queue<String> output;
@@ -17,14 +17,14 @@ public abstract class SequentialFilter extends Filter {
 	
 	@Override
 	public void setNextFilter(Filter nextFilter) {
-		if (nextFilter instanceof SequentialFilter){
-			SequentialFilter sequentialNext = (SequentialFilter) nextFilter;
-			this.next = sequentialNext;
-			sequentialNext.prev = this;
+		if (nextFilter instanceof ConcurrentFilter){
+			ConcurrentFilter concurrentNext = (ConcurrentFilter) nextFilter;
+			this.next = concurrentNext;
+			concurrentNext.prev = this;
 			if (this.output == null){
 				this.output = new LinkedList<String>();
 			}
-			sequentialNext.input = this.output;
+			concurrentNext.input = this.output;
 		} else {
 			throw new RuntimeException("Should not attempt to link dissimilar filter types.");
 		}

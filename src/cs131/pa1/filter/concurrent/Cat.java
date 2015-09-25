@@ -1,4 +1,4 @@
-package cs131.pa1.filter.sequential;
+package cs131.pa1.filter.concurrent;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,9 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-import cs131.pa1.filter.sequential.SequentialREPL;
+import cs131.pa1.filter.concurrent.ConcurrentREPL;
 
-public class Cat extends SequentialFilter {
+public class Cat extends ConcurrentFilter {
 
 	private List<Scanner> scanners;
 	private int scannerNumber;
@@ -20,7 +20,7 @@ public class Cat extends SequentialFilter {
 			throw new MissingArgumentException();
 		}
 		
-		String cwd = SequentialREPL.currentWorkingDirectory;
+		String cwd = ConcurrentREPL.currentWorkingDirectory;
 		scanners = new ArrayList<Scanner>();
 		scannerNumber = 0;
 		for (String fileName : Arrays.asList(fileNames.split("\\s+"))){

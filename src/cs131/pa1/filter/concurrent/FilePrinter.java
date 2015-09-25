@@ -1,15 +1,15 @@
-package cs131.pa1.filter.sequential;
+package cs131.pa1.filter.concurrent;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
-public class FilePrinter extends SequentialFilter {
+public class FilePrinter extends ConcurrentFilter {
 	private PrintStream printWriter;
 	
 	public FilePrinter(String outputFileName){
 		try {
-			String cwd = SequentialREPL.currentWorkingDirectory;
+			String cwd = ConcurrentREPL.currentWorkingDirectory;
 			File f = new File(cwd + "/" + outputFileName);
 			printWriter = new PrintStream(f);
 		} catch (FileNotFoundException e) {

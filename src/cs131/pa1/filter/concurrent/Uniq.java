@@ -1,9 +1,9 @@
-package cs131.pa1.filter.sequential;
+package cs131.pa1.filter.concurrent;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class Uniq extends SequentialFilter {
+public class Uniq extends ConcurrentFilter {
 
 	private Set<String> seen;
 	

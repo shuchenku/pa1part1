@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import cs131.pa1.filter.sequential.SequentialREPL;
+import cs131.pa1.filter.concurrent.ConcurrentREPL;
 
 
 public class RedirectionTests {
@@ -23,10 +23,10 @@ public class RedirectionTests {
 	@Test
 	public void testCatRedirected(){
 		testInput("cat hello-world.txt > new-hello-world.txt\nexit");
-		SequentialREPL.main(null);
+		ConcurrentREPL.main(null);
 		assertFileContentsEquals("new-hello-world.txt", "hello\nworld\n");
 		assertOutput(Message.NEWCOMMAND.toString());
-		if (!AllSequentialTests.DEBUGGING_MODE){
+		if (!AllConcurrentTests.DEBUGGING_MODE){
 			destroyFile("new-hello-world.txt");
 		}
 	}
@@ -34,10 +34,10 @@ public class RedirectionTests {
 	@Test
 	public void testComplexRedirection(){
 		testInput("cat fizz-buzz-10000.txt | uniq | grep F > trial-file.txt\nexit");
-		SequentialREPL.main(null);
+		ConcurrentREPL.main(null);
 		assertFileContentsEquals("trial-file.txt", "FizzBuzz\nFizz\n");
 		assertOutput(Message.NEWCOMMAND.toString());
-		if (!AllSequentialTests.DEBUGGING_MODE){
+		if (!AllConcurrentTests.DEBUGGING_MODE){
 			destroyFile("trial-file.txt");
 		}
 	}
@@ -45,10 +45,10 @@ public class RedirectionTests {
 	@Test
 	public void testDirectoryShiftedRedirection(){
 		testInput("cd dir1\nls > folder-contents.txt\nexit");
-		SequentialREPL.main(null);
+		ConcurrentREPL.main(null);
 		assertFileContentsEquals("dir1/folder-contents.txt", "dir2\nf1.txt\nfolder-contents.txt\n");
 		assertOutput(Message.NEWCOMMAND.toString() + Message.NEWCOMMAND.toString());
-		if (!AllSequentialTests.DEBUGGING_MODE){
+		if (!AllConcurrentTests.DEBUGGING_MODE){
 			destroyFile("dir1/folder-contents.txt");
 		}
 	}
@@ -93,7 +93,7 @@ public class RedirectionTests {
 	}
 	
 	public void assertOutput(String expected){
-                AllSequentialTests.assertOutput(expected, outContent);
+                AllConcurrentTests.assertOutput(expected, outContent);
 	}
 	
 	@Before

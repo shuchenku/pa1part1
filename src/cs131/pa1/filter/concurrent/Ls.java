@@ -1,12 +1,12 @@
-package cs131.pa1.filter.sequential;
+package cs131.pa1.filter.concurrent;
 
 import java.io.File;
 
-public class Ls extends SequentialFilter {
+public class Ls extends ConcurrentFilter {
 	
 	@Override
 	public void process(){
-		String currentWorkingDirectory = SequentialREPL.currentWorkingDirectory;
+		String currentWorkingDirectory = ConcurrentREPL.currentWorkingDirectory;
 		File directoryObject = new File(currentWorkingDirectory);
 		String[] files = directoryObject.list();
 		for (String file : files){

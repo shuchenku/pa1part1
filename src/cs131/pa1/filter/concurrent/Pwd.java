@@ -1,10 +1,10 @@
-package cs131.pa1.filter.sequential;
+package cs131.pa1.filter.concurrent;
 
-public class Pwd extends SequentialFilter {
+public class Pwd extends ConcurrentFilter {
 	
 	@Override
 	public void process(){
-		this.output.add(SequentialREPL.currentWorkingDirectory);
+		this.output.add(ConcurrentREPL.currentWorkingDirectory);
 	}
 	
 	@Override

@@ -12,7 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import cs131.pa1.filter.sequential.SequentialREPL;
+import cs131.pa1.filter.concurrent.ConcurrentREPL;
 
 public class TextProcessingTests {
 	
@@ -21,35 +21,35 @@ public class TextProcessingTests {
 	@Test
 	public void testCat(){
 		testInput("cat hello-world.txt\nexit");
-		SequentialREPL.main(null);
+		ConcurrentREPL.main(null);
 		assertOutput(Message.NEWCOMMAND + "hello\nworld\n");
 	}
 	
 	@Test
 	public void testMultiCat(){
 		testInput("cat hello-world.txt world.txt hello.txt\nexit");
-		SequentialREPL.main(null);
+		ConcurrentREPL.main(null);
 		assertOutput(Message.NEWCOMMAND + "hello\nworld\nWORLD\nHELLO\n");
 	}
 	
 	@Test
 	public void testCatFileNotFound(){
 		testInput("cat doesnt-exist.txt\nexit");
-		SequentialREPL.main(null);
+		ConcurrentREPL.main(null);
 		assertOutput(Message.NEWCOMMAND + "At least one of the files in the command [cat doesnt-exist.txt] was not found.\n");
 	}
 	
 	@Test
 	public void testMultiCatFileNotFound(){
 		testInput("cat world.txt hello.txt doesnt-exist.txt\nexit");
-		SequentialREPL.main(null);
+		ConcurrentREPL.main(null);
 		assertOutput(Message.NEWCOMMAND + "At least one of the files in the command [cat world.txt hello.txt doesnt-exist.txt] was not found.\n");
 	}
 	
     @Test
 	public void testReadPreviousFile(){
 		testInput("cat hello.txt hello.txt > hello2.txt\ncat hello2.txt\nexit");
-		SequentialREPL.main(null);
+		ConcurrentREPL.main(null);
 		assertOutput(Message.NEWCOMMAND.toString() + Message.NEWCOMMAND.toString() + "HELLO\nHELLO\n");
 	}
 	
@@ -58,7 +58,7 @@ public class TextProcessingTests {
 	@Test
 	public void testGrep(){
 		testInput("cat fizz-buzz-10000.txt | grep 111\nexit");
-		SequentialREPL.main(null);
+		ConcurrentREPL.main(null);
 		assertOutput(Message.NEWCOMMAND + "1111\n1112\n1114\n1117\n1118\n2111\n4111\n5111\n7111\n8111\n");
 	}
 	
@@ -67,7 +67,7 @@ public class TextProcessingTests {
 	@Test
 	public void testUniq(){
 		testInput("cat fizz-buzz-10000.txt | grep Fizz | uniq\nexit");
-		SequentialREPL.main(null);
+		ConcurrentREPL.main(null);
 		assertOutput(Message.NEWCOMMAND + "FizzBuzz\nFizz\n");
 	}
 	
@@ -76,7 +76,7 @@ public class TextProcessingTests {
 	@Test
 	public void testWc(){
 		testInput("cat fizz-buzz-10000.txt | wc\nexit");
-		SequentialREPL.main(null);
+		ConcurrentREPL.main(null);
 		assertOutput(Message.NEWCOMMAND + "10001 10001 42081\n");
 	}
 	
@@ -99,7 +99,7 @@ public class TextProcessingTests {
 	}
 	
 	public void assertOutput(String expected){
-		AllSequentialTests.assertOutput(expected, outContent);
+		AllConcurrentTests.assertOutput(expected, outContent);
 	}
 	
 	@Before

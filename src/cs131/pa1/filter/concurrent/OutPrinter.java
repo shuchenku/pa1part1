@@ -1,6 +1,6 @@
-package cs131.pa1.filter.sequential;
+package cs131.pa1.filter.concurrent;
 
-public class OutPrinter extends SequentialFilter {
+public class OutPrinter extends ConcurrentFilter {
 	
 	private boolean standardError = false;
 	private String errorMessage;

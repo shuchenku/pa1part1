@@ -1,6 +1,6 @@
-package cs131.pa1.filter.sequential;
+package cs131.pa1.filter.concurrent;
 
-public class Wc extends SequentialFilter {
+public class Wc extends ConcurrentFilter {
 	
 	int nLines;
 	int nWords;

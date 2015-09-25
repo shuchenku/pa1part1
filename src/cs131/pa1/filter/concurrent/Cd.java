@@ -1,9 +1,9 @@
-package cs131.pa1.filter.sequential;
+package cs131.pa1.filter.concurrent;
 
 import java.io.File;
 import java.io.IOException;
 
-public class Cd extends SequentialFilter{
+public class Cd extends ConcurrentFilter{
 	// hasBeenSwapped: true if working directory has changed
 	// swappingTolocation: the path that will be the new working directory
 	boolean hasBeenSwapped;
@@ -24,7 +24,7 @@ public class Cd extends SequentialFilter{
 		
 		// hasBeenSwapped keeps track of when the path has been changed (true when process is done)
 		hasBeenSwapped = false;
-		String currentWorkingDirectory = SequentialREPL.currentWorkingDirectory;
+		String currentWorkingDirectory = ConcurrentREPL.currentWorkingDirectory;
 		File newPath = new File(path);
 		if (newPath.isAbsolute()){
 			// If the entered path is absolute, then set working directory to it
@@ -44,7 +44,7 @@ public class Cd extends SequentialFilter{
 	// Executes the CD command, which has not occurred before
 	// this method is called.
 	public void process(){
-		SequentialREPL.currentWorkingDirectory = swappingToLocation;
+		ConcurrentREPL.currentWorkingDirectory = swappingToLocation;
 		hasBeenSwapped = true;
 	}
 	
