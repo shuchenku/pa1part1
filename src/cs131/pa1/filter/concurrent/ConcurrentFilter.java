@@ -4,7 +4,7 @@ import java.util.Queue;
 
 import cs131.pa1.filter.Filter;
 
-
+// THIS IS SEQUENTIAL. YOU MUST MAKE IT CONCURRENT.
 public abstract class ConcurrentFilter extends Filter {
 	
 	protected Queue<String> input;
