@@ -23,6 +23,7 @@ public class Cat extends ConcurrentFilter {
 		String cwd = ConcurrentREPL.currentWorkingDirectory;
 		scanners = new ArrayList<Scanner>();
 		scannerNumber = 0;
+		// parses the string of filenames by whitespace
 		for (String fileName : Arrays.asList(fileNames.split("\\s+"))){
 			Scanner fileScanner = new Scanner(new File(cwd + FILE_SEPARATOR + fileName));
 			scanners.add(fileScanner);

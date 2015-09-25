@@ -24,7 +24,7 @@ public class ConcurrentCommandBuilder {
 		ConcurrentFilter finalFilter = determineFinalFilter(command);
 		command = adjustCommandToRemoveFinalFilter(command);		
 		
-		//parse the input command and create a list of filters
+		//parse the input command based on pipes and create a list of filters
 		List<String> subCommands = Arrays.asList(command.split("\\|"));
 		List<ConcurrentFilter> filterPipeline = new ArrayList<ConcurrentFilter>();
 		
