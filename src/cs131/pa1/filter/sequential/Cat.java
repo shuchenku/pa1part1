@@ -14,10 +14,10 @@ public class Cat extends SequentialFilter {
 	private List<Scanner> scanners;
 	private int scannerNumber;
 	
-	public Cat(String fileNames) throws FileNotFoundException, InvalidArgumentException{
+	public Cat(String fileNames) throws FileNotFoundException, MissingArgumentException{
 		
 		if (fileNames==null) {
-			throw new InvalidArgumentException();
+			throw new MissingArgumentException();
 		}
 		
 		String cwd = SequentialREPL.currentWorkingDirectory;

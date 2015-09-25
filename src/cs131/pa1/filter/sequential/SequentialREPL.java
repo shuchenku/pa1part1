@@ -9,7 +9,6 @@ import cs131.pa1.filter.sequential.SequentialFilter;
 public class SequentialREPL {
 
 	static String currentWorkingDirectory;
-	static List<SequentialFilter> filters;
 	
 	public static void main(String[] args){
 		
@@ -24,15 +23,15 @@ public class SequentialREPL {
 				System.out.print(Message.GOODBYE);
 				return;
 			} else {
-				filters = SequentialCommandBuilder.createFiltersFromCommand(command);
-				startFilters();
+				List<SequentialFilter> filters = SequentialCommandBuilder.createFiltersFromCommand(command);
+				startFilters(filters);
 			}
 			System.out.print(Message.NEWCOMMAND);
 		}
 		console.close();
 	}
 	
-	public static void startFilters(){
+	public static void startFilters(List<SequentialFilter> filters){
 		for (SequentialFilter filter : filters){
 			filter.process();
 		}

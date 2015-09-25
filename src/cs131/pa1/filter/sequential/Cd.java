@@ -10,10 +10,16 @@ public class Cd extends SequentialFilter{
 	String swappingToLocation;
 	
 	// Constructs this Cd filter with a path
-	public Cd (String path) throws IOException, InvalidArgumentException{
+	public Cd (String path) throws IOException, MissingArgumentException, TooManyArgumentsException {
 		
+		// Cd must have a path to change the directory
 		if (path==null) {
-			throw new InvalidArgumentException();
+			throw new MissingArgumentException();
+		}
+		
+		// Cd can only have one path
+		if (path.contains(" ")) {
+			throw new TooManyArgumentsException();
 		}
 		
 		// hasBeenSwapped keeps track of when the path has been changed (true when process is done)
